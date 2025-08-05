@@ -1,0 +1,95 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int main(){
+    int n , total=0, i, j, head=0 , DiskSize , dir;
+
+    printf("Enter the number of requests: \n");
+    scanf("%d",&n);
+
+    printf("Enter the initial head position: \n");
+    scanf("%d",&head);
+
+    int req[n];
+    printf("Enter the total Disk size: \n");
+    scanf("%d",&DiskSize);
+    DiskSize = DiskSize - 1;
+
+    printf("Enter request sequence: \n");
+    for(i=0;i<n;i++){
+        scanf("%d",&req[i]);
+    }
+
+    printf("Enter the direction 0-left and 1-right:\n");
+    scanf("%d",&dir);
+
+   
+    int temp;
+    for(i=0;i<n;i++){
+        for(j=0;j<n-i-1;j++){
+            if (req[j]>req[j+1]){
+                temp = req[j];
+                req[j] = req[j+1];
+                req[j+1] = temp;
+            }
+        }
+    }
+
+   
+    printf("\nHead Movement Sequence:\n");
+    printf("%d", head);
+
+    if(dir == 0) 
+    {
+        for(i=n-1; i>=0; i--){
+            if(req[i] <= head){
+                printf(" -> %d", req[i]);
+                total += abs(head - req[i]);
+                head = req[i];
+            }
+        }
+       
+        if(head != 0){
+            printf(" -> 0");
+            total += head;
+            head = 0;
+        }
+       
+        for(i=0; i<n; i++){
+            if(req[i] > head){
+                printf(" -> %d", req[i]);
+                total += abs(head - req[i]);
+                head = req[i];
+            }
+        }
+    }
+    else
+    {
+       
+        for(i=0; i<n; i++){
+            if(req[i] >= head){
+                printf(" -> %d", req[i]);
+                total += abs(head - req[i]);
+                head = req[i];
+            }
+        }
+       
+        if(head != DiskSize){
+            printf(" -> %d", DiskSize);
+            total += abs(head - DiskSize);
+            head = DiskSize;
+        }
+        
+        for(i=n-1; i>=0; i--){
+            if(req[i] < head){
+                printf(" -> %d", req[i]);
+                total += abs(head - req[i]);
+                head = req[i];
+            }
+        }
+    }
+
+    printf("\n\nTotal Head Movement: %d\n", total);
+
+    return 0;
+}
