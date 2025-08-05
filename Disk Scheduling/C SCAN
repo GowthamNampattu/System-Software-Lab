@@ -1,0 +1,126 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+void sort(int arr[], int n) {
+    int i, j, temp;
+    for(i = 0; i < n - 1; i++) {
+        for(j = 0; j < n - i - 1; j++) {
+            if(arr[j] > arr[j+1]) {
+                temp = arr[j];
+                arr[j] = arr[j+1];
+                arr[j+1] = temp;
+            }
+        }
+    }
+}
+
+int cscan_right(int request[], int n, int head, int track) {
+    int seek = 0;
+    int sequence[200], index = 0;
+
+   
+    for(int i = 0; i < n; i++) {
+        if(request[i] >= head) {
+            sequence[index++] = request[i];
+        }
+    }
+
+    
+    sequence[index++] = track - 1;
+
+   
+    sequence[index++] = 0;
+
+  
+    for(int i = 0; i < n; i++) {
+        if(request[i] < head) {
+            sequence[index++] = request[i];
+        }
+    }
+
+    printf("\nC-SCAN Seek Sequence: %d", head);
+    for(int i = 0; i < index; i++) {
+        printf(" -> %d", sequence[i]);
+        seek += abs(head - sequence[i]);
+        head = sequence[i];
+    }
+
+    return seek;
+}
+
+int cscan_left(int request[], int n, int head, int track) {
+    int seek = 0;
+    int sequence[200], index = 0;
+
+   
+    for(int i = n - 1; i >= 0; i--) {
+        if(request[i] <= head) {
+            sequence[index++] = request[i];
+        }
+    }
+
+    sequence[index++] = 0;
+
+    sequence[index++] = track - 1;
+
+    for(int i = n - 1; i >= 0; i--) {
+        if(request[i] > head) {
+            sequence[index++] = request[i];
+        }
+    }
+
+    printf("\nC-SCAN Seek Sequence: %d", head);
+    for(int i = 0; i < index; i++) {
+        printf(" -> %d", sequence[i]);
+        seek += abs(head - sequence[i]);
+        head = sequence[i];
+    }
+
+    return seek;
+}
+
+int main() {
+    int n, i, head, track, c;
+    int requests[100];
+    int seek = 0;
+
+    printf("Enter number of requests: ");
+    scanf("%d", &n);
+
+    printf("Enter the disk requests: ");
+    for(i = 0; i < n; i++) {
+        scanf("%d", &requests[i]);
+    }
+
+    printf("Enter initial head position: ");
+    scanf("%d", &head);
+
+    printf("Enter the track size: ");
+    scanf("%d", &track);
+
+    sort(requests, n);
+
+    printf("Direction of head movement (C-SCAN)\n1. LEFT\n2. RIGHT\nEnter choice: ");
+    scanf("%d", &c);
+
+    switch(c) {
+        case 1:
+            seek = cscan_left(requests, n, head, track);
+            break;
+        case 2:
+            seek = cscan_right(requests, n, head, track);
+            break;
+        default:
+            printf("Invalid direction selected.\n");
+            return 1;
+    }
+
+    printf("\nTotal Seek Time: %d\n", seek);
+
+
+    return 0;
+}
+  
+	
