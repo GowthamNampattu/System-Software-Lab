@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct file {
+    char name[20];
+    int nob;
+    struct block {
+        int bno;
+        struct block *next;
+    } *sb;
+} f[30];
+
+int allocated_blocks[30] = {0};
+char allocated_files[30][20] = {{0}};
+
+int main() {
+    int i, j, n, retry;
+    char s[20];
+    struct block *temp, *prev;
+
+    printf("Enter number of files: ");
+    scanf("%d", &n);
+
+    for (i = 0; i < n; i++) {
+        retry = 0;
+        printf("\nEnter file name %d: ", i + 1);
+        scanf("%s", f[i].name);
+        printf("Enter number of blocks in file %d: ", i + 1);
+        scanf("%d", &f[i].nob);
+
+        f[i].sb = (struct block *)malloc(sizeof(struct block));
+        temp = f[i].sb;
+        prev = NULL;
+
+        printf("Enter the blocks of the file: ");
+        for (j = 0; j < f[i].nob; j++) {
+            scanf("%d", &temp->bno);
+
+            if (allocated_blocks[temp->bno - 1]) {
+                printf("Block %d is already allocated to file %s. Please choose a different block.\n",
+                       temp->bno, allocated_files[temp->bno - 1]);
+
+                temp = f[i].sb;
+                while (temp != NULL) {
+                    prev = temp;
+                    temp = temp->next;
+                    free(prev);
+                }
+
+                retry = 1;
+                break;
+            }
+
+            allocated_blocks[temp->bno - 1] = 1;
+            strcpy(allocated_files[temp->bno - 1], f[i].name);
+
+            if (j < f[i].nob - 1) {
+                temp->next = (struct block *)malloc(sizeof(struct block));
+                temp = temp->next;
+            } else {
+                temp->next = NULL;
+            }
+        }
+
+        if (retry) {
+            i--;
+            continue;
+        }
+    }
+
+    printf("\nFILE NAME\tNO OF BLOCKS\tBLOCKS OCCUPIED\n");
+    for (i = 0; i < n; i++) {
+        printf("%s\t\t%d\t\t", f[i].name, f[i].nob);
+        temp = f[i].sb;
+        while (temp) {
+            printf("%d", temp->bno);
+            temp = temp->next;
+            if (temp) {
+                printf(" -> ");
+            }
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
+
